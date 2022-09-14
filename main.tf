@@ -22,6 +22,8 @@ resource "aws_iam_role" "tf-ppline-role" {
   ]
 }
 EOF
+}
+
 data "aws_iam_policy_document" "tf-cicd-pipeline-policies" {
     statement{
         sid = ""
@@ -36,6 +38,7 @@ data "aws_iam_policy_document" "tf-cicd-pipeline-policies" {
         effect = "Allow"
     }
 }
+
 resource "aws_iam_policy" "tf-cicd-pipeline-policy" {
     name = "tf-cicd-pipeline-policy"
     path = "/"
@@ -48,7 +51,7 @@ resource "aws_iam_role_policy_attachment" "tf-cicd-pipeline-attachment" {
     role = aws_iam_role.tf-codepipeline-role.id
 }
 
-}
+
 data "aws_iam_policy_document" "tf-cicd-build-policies" {
     statement{
         sid = ""
