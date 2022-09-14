@@ -17,7 +17,8 @@ resource "aws_iam_role" "tf-ppline-role" {
         "Service": "codepipeline.amazonaws.com"
       },
       "Effect": "Allow",
-      "Sid": ""
+      "Action": "codestar-connections:UseConnection",
+      "Resource": "insert ARN of the CodeStar connection here"
     }
   ]
 }
