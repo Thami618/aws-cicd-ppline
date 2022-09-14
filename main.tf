@@ -7,21 +7,24 @@ resource "aws_s3_bucket" "ppline-artifacts" {
 }
 resource "aws_iam_role" "tf-ppline-role" {
   name = "tf-ppline-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "codepipeline.amazonaws.com"
-        }
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "codepipeline.amazonaws.com"
       },
-    ]
-  })
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 
 }
+
 data "aws_iam_policy_document" "tf-cicd-build-policies" {
     statement{
         sid = ""
