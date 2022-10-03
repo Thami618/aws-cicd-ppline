@@ -22,3 +22,4 @@ resource "aws_subnet" "subnet-tf-private1" {
       "Name" = "subnet-tf-private"
     }
 }
+
