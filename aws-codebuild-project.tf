@@ -23,6 +23,7 @@ resource "aws_codebuild_project" "tf-plan" {
  }
 }
 
+
 resource "aws_codebuild_project" "tf-apply" {
   name          = "tf-cicd-apply"
   description   = "Apply stage for terraform"
@@ -48,12 +49,10 @@ resource "aws_codebuild_project" "tf-apply" {
  }
 }
 
-
+#Creating the actual pipeline resoucre
 resource "aws_codepipeline" "cicd_pipeline" {
-
     name = "tf-cicd"
     role_arn = aws_iam_role.tf-ppline-role.arn
-
     artifact_store {
         type="S3"
         location = aws_s3_bucket.ppline-artifacts.id
@@ -68,6 +67,7 @@ resource "aws_codepipeline" "cicd_pipeline" {
             provider = "CodeStarSourceConnection"
             version = "1"
             output_artifacts = ["tf-code"]
+            #Codestar webhooks
             configuration = {
                 FullRepositoryId = "Thami618/aws-cicd-ppline"
                 BranchName   = "main"

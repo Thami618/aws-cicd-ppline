@@ -14,7 +14,7 @@ resource "aws_subnet" "subnet-tf-public" {
       "Name" = "subnet-tf-public"
     }
 }
-resource "aws_subnet" "subnet-tf-private" {
+resource "aws_subnet" "subnet-tf-private1" {
     vpc_id = aws_vpc.tf_demo.id
     cidr_block = "10.0.2.0/24"
     availability_zone = "us-east-1b"

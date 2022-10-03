@@ -23,7 +23,7 @@ resource "aws_iam_role" "tf-ppline-role" {
 }
 EOF
 }
-
+#Policy document for the Pipeline
 data "aws_iam_policy_document" "tf-cicd-pipeline-policies" {
     statement{
         sid = ""
@@ -50,8 +50,7 @@ resource "aws_iam_role_policy_attachment" "tf-cicd-pipeline-attachment" {
     policy_arn = aws_iam_policy.tf-cicd-pipeline-policy.arn
     role = aws_iam_role.tf-ppline-role.id
 }
-
-
+#Policy document for Code build
 data "aws_iam_policy_document" "tf-cicd-build-policies" {
     statement{
         sid = ""
