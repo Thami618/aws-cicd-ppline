@@ -76,6 +76,22 @@ resource "aws_codepipeline" "cicd_pipeline" {
             }
         }
     }
+/*     stage {
+        name = "Approve"
+        action {
+            name     = "Approval"
+            category = "Approval"
+            owner    = "AWS"
+            provider = "Manual"
+            version  = "1"
+
+            configuration = {
+                NotificationArn = "${var.approve_sns_arn}"
+                CustomData = "${var.approve_comment}"
+                ExternalEntityLink = "${var.approve_url}"
+            }
+        }
+    } */
 
     stage {
         name ="Plan"
