@@ -1,129 +1,124 @@
-# vpc
+# Create a VPC
 resource "aws_vpc" "my-vpc" {
-  cidr_block              = var.vpc_cidr
-  instance_tenancy        = "default"
-  enable_dns_hostnames    = true
-
-  tags      = {
-    Name    = "dev vpc"
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    Name = "Demo VPC"
   }
 }
 
-
-#internet gateway
-resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id    = aws_vpc.my-vpc.id
-
-  tags      = {
-    Name    = "dev internet gateway"
-  }
-}
-
- 
-# az1 subnet
-resource "aws_subnet" "public_subnet_az1" {
+# Create Web Public Subnet
+resource "aws_subnet" "web-subnet-1" {
   vpc_id                  = aws_vpc.my-vpc.id
-  cidr_block              = var.public_subnet_az1_cidr
+  cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 
-  tags      = {
-    Name    = "public subnet az1"
+  tags = {
+    Name = "Web-1a"
   }
 }
 
-# az2 subnet
-resource "aws_subnet" "public_subnet_az2" {
+resource "aws_subnet" "web-subnet-2" {
   vpc_id                  = aws_vpc.my-vpc.id
-  cidr_block              = var.public_subnet_az2_cidr
+  cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
 
-  tags      = {
-    Name    = "public subnet az2"
+  tags = {
+    Name = "Web-2b"
   }
 }
 
-# route table
-resource "aws_route_table" "public_route_table" {
-  vpc_id       = aws_vpc.my-vpc.id
+# Create Application Public Subnet
+resource "aws_subnet" "application-subnet-1" {
+  vpc_id                  = aws_vpc.my-vpc.id
+  cidr_block              = "10.0.11.0/24"
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "Application-1a"
+  }
+}
+
+resource "aws_subnet" "application-subnet-2" {
+  vpc_id                  = aws_vpc.my-vpc.id
+  cidr_block              = "10.0.12.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "Application-2b"
+  }
+}
+
+# Create Database Private Subnet
+resource "aws_subnet" "database-subnet-1" {
+  vpc_id            = aws_vpc.my-vpc.id
+  cidr_block        = "10.0.21.0/24"
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "Database-1a"
+  }
+}
+
+resource "aws_subnet" "database-subnet-2" {
+  vpc_id            = aws_vpc.my-vpc.id
+  cidr_block        = "10.0.22.0/24"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "Database-2b"
+  }
+}
+
+resource "aws_subnet" "database-subnet" {
+  vpc_id            = aws_vpc.my-vpc.id
+  cidr_block        = "10.0.3.0/24"
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "Database"
+  }
+}
+
+# Create Internet Gateway
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.my-vpc.id
+
+  tags = {
+    Name = "Demo IGW"
+  }
+}
+
+# Create Web layber route table
+resource "aws_route_table" "web-rt" {
+  vpc_id = aws_vpc.my-vpc.id
+
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id
+    gateway_id = aws_internet_gateway.igw.id
   }
 
-  tags       = {
-    Name     = "public route table"
-  }
-}
-
-# associate public subnet az1 to "public route table"
-
-resource "aws_route_table_association" "public_subnet_az1_route_table_association" {
-  subnet_id           = aws_subnet.public_subnet_az1.id
-  route_table_id      = aws_route_table.public_route_table.id
-}
-
-# associate public subnet az2 to "public route table"
-
-resource "aws_route_table_association" "public_subnet_2_route_table_association" {
-  subnet_id           = aws_subnet.public_subnet_az2.id
-  route_table_id      = aws_route_table.public_route_table.id
-}
-
-# private app subnet az1
- 
-resource "aws_subnet" "private_app_subnet_az1" {
-  vpc_id                   = aws_vpc.my-vpc.id
-  cidr_block               = var.private_app_subnet_az1_cidr
-  availability_zone        = "us-east-1a"
-  map_public_ip_on_launch  = false
-
-  tags      = {
-    Name    = "private app subnet az1"
+  tags = {
+    Name = "WebRT"
   }
 }
 
-# private app subnet az2
-
-resource "aws_subnet" "private_app_subnet_az2" {
-  vpc_id                   = aws_vpc.my-vpc.id
-  cidr_block               = var.private_app_subnet_az2_cidr
-  availability_zone        = "us-east-1b"
-  map_public_ip_on_launch  = false
-
-  tags      = {
-    Name    = "private app subnet az2"
-  }
+# Create Web Subnet association with Web route table
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.web-subnet-1.id
+  route_table_id = aws_route_table.web-rt.id
 }
 
-# private data subnet az1
-
-resource "aws_subnet" "private_data_subnet_az1" {
-  vpc_id                   = aws_vpc.my-vpc.id
-  cidr_block               = var.private_data_subnet_az1_cidr
-  availability_zone        = "us-east-1a"
-  map_public_ip_on_launch  = false
-
-  tags      = {
-    Name    = "private data subnet az1"
-  }
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.web-subnet-2.id
+  route_table_id = aws_route_table.web-rt.id
 }
 
-# private data subnet az2
-
-resource "aws_subnet" "private_data_subnet_az2" {
-  vpc_id                   = aws_vpc.my-vpc.id
-  cidr_block               = var.private_data_subnet_az2_cidr
-  availability_zone        = "us-east-1b"
-  map_public_ip_on_launch  = false
-
-  tags      = {
-    Name    = "private data subnet az1"
-  }
-}
- # EC2 Instance
+#Create EC2 Instance
 resource "aws_instance" "webserver1" {
   ami                    = "ami-0d5eff06f840b45e9"
   instance_type          = "t2.micro"
@@ -151,6 +146,7 @@ resource "aws_instance" "webserver2" {
   }
 
 }
+
 # Create Web Security Group
 resource "aws_security_group" "web-sg" {
   name        = "Web-SG"
@@ -177,7 +173,7 @@ resource "aws_security_group" "web-sg" {
   }
 }
 
-# Create Web Server Security Group
+# Create Application Security Group
 resource "aws_security_group" "webserver-sg" {
   name        = "Webserver-SG"
   description = "Allow inbound traffic from ALB"
@@ -228,6 +224,7 @@ resource "aws_security_group" "database-sg" {
     Name = "Database-SG"
   }
 }
+
 resource "aws_lb" "external-elb" {
   name               = "External-LB"
   internal           = false
@@ -273,6 +270,7 @@ resource "aws_lb_listener" "external-elb" {
     target_group_arn = aws_lb_target_group.external-elb.arn
   }
 }
+
 resource "aws_db_instance" "default" {
   allocated_storage      = 10
   db_subnet_group_name   = aws_db_subnet_group.default.id
